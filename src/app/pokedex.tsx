@@ -6,7 +6,7 @@ import {Pokemon} from '@/@types/pokemon';
 import {View, Text} from 'react-native';
 
 export default function Pokedex() {
-     const [loading, setLoading] = useState(true);
+     conhfchst [loading, setLoading] = useState(true);
      const [pokemons, setPokemon] = useState<Pokemon[]>([]);
 
      useEffect(() => {
