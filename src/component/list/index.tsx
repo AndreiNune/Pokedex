@@ -1,43 +1,101 @@
-import React, { useEffect, useState } from 'react';
-import { FlatList, Text, View, Image } from 'react-native';
-import { getPokemon } from '@/integration/pokemonIntegration';
+import React from 'react';
+import {
+  ActivityIndicator,
+  DimensionValue,
+  FlatList,
+  Image,
+  StyleProp,
+  Text,
+  View,
+  ViewStyle,
+} from 'react-native';
+
+import { Pokemon } from '@/@types/pokemon';
 import styles from './style';
 
-export default function Lista() {
-  const [pokemons, setPokemons] = useState([]);
+type ListaProps = {
+  pokemons: Pokemon[];
+  loading?: boolean;
+  erro?: string;
+  columns?: number;
+  style?: StyleProp<ViewStyle>;
+};
 
-  useEffect(() => {
-    async function carregarDados() {
-      try {
-        const dados = await getPokemon();
-        setPokemons(dados);
-      } catch (error) {
-        console.error("Erro ao carregar a lista de Pokémon:", error);
-      }
-    }
-    carregarDados();
-  }, []);
+export default function Lista({
+  pokemons,
+  loading = false,
+  erro = '',
+  columns = 2,
+  style,
+}: ListaProps) {
+  const normalizedColumns = Math.max(1, Math.min(columns, 3));
+  const itemWidth: DimensionValue = `${100 / normalizedColumns}%`;
+
+  if (loading) {
+    return (
+      <View style={[styles.centerState, style]}>
+        <ActivityIndicator size="large" color="#d8b4fe" />
+        <Text style={styles.stateText}>Carregando pokemons...</Text>
+      </View>
+    );
+  }
+
+  if (erro.length > 0) {
+    return (
+      <View style={[styles.centerState, style]}>
+        <Text style={styles.errorText}>{erro}</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={pokemons}
-        keyExtractor={(item) => item.index} // Usa o 'index' (ex: "001") como chave única
-        renderItem={({ item }) => (
-          <View style={styles.itemCartao}>
-            <Image 
-              source={{ uri: item.imagem }} 
-              style={styles.imagemPokemon} 
-            />
-            <View style={styles.infoContainer}>
-              <Text style={styles.nome}>#{item.index} - {item.nome}</Text>
-              <Text style={styles.detalhe}>
-                Tipos: {item.tipos.join(', ')}
-              </Text>
+    <FlatList
+      key={normalizedColumns}
+      data={pokemons}
+      keyExtractor={(item) => item.index}
+      numColumns={normalizedColumns}
+      contentContainerStyle={[styles.listContent, style]}
+      columnWrapperStyle={normalizedColumns > 1 ? styles.columnWrapper : undefined}
+      showsVerticalScrollIndicator={false}
+      renderItem={({ item }) => {
+        const principaisPoderes = item.poderes.slice(0, 3);
+
+        return (
+          <View style={[styles.itemWrapper, { width: itemWidth }]}>
+            <View style={styles.card}>
+              <View style={styles.imagePanel}>
+                <Image
+                  source={{ uri: item.imagem }}
+                  style={styles.pokemonImage}
+                  resizeMode="contain"
+                />
+                <Text style={styles.index}>#{item.index}</Text>
+              </View>
+
+              <View style={styles.cardContent}>
+                <Text style={styles.name}>{item.nome}</Text>
+
+                <View style={styles.typeRow}>
+                  {item.tipos.map((tipo) => (
+                    <Text key={`${item.index}-${tipo}`} style={styles.typeBadge}>
+                      {tipo}
+                    </Text>
+                  ))}
+                </View>
+
+                <View style={styles.stats}>
+                  {principaisPoderes.map((poder) => (
+                    <View key={`${item.index}-${poder.nome}`} style={styles.statLine}>
+                      <Text style={styles.statName}>{poder.nome}</Text>
+                      <Text style={styles.statValue}>{poder.forca}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
             </View>
           </View>
-        )}
-      />
-    </View>
+        );
+      }}
+    />
   );
 }

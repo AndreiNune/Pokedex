@@ -5,6 +5,7 @@ import {
   Text,
   Alert,
   Image,
+  Pressable,
 } from 'react-native';
 
 import { useRouter } from 'expo-router';
@@ -50,10 +51,10 @@ export default function Index() {
         Passe o mouse no menino ney
       </Text>
 
-      <View
+      <Pressable
         style={styles.neymarContainer}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
+        onHoverIn={() => setHover(true)}
+        onHoverOut={() => setHover(false)}
       >
         <Image
           source={
@@ -97,7 +98,7 @@ export default function Index() {
             />
           </View>
         )}
-      </View>
+      </Pressable>
     </View>
   );
 }

@@ -4,6 +4,7 @@ export interface Poder{
 }
 
 export interface Pokemon{
+    id: number;
     index: string;
     nome: string;
     imagem: string;
