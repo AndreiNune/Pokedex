@@ -48,7 +48,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
-        Passe o mouse no menino ney
+        Pokedex
       </Text>
 
       <Pressable
@@ -59,8 +59,8 @@ export default function Index() {
         <Image
           source={
             hover
-              ? require('../../assets/images/neymar-aberto.png')
-              : require('../../assets/images/neymar-fechado.png')
+              ? require('./assets/images/neymar-aberto.png')
+              : require('./assets/images/neymar-aberto.png')
           }
           style={styles.neymarImage}
           resizeMode="contain"
