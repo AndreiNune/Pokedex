@@ -10,6 +10,8 @@ import {
 
 import { useRouter } from 'expo-router';
 
+import { useAuth } from '@/context/AuthContext';
+
 import Button from '@/component/button';
 import Input from '@/component/input';
 
@@ -17,8 +19,49 @@ export default function Index() {
   const [usuario, setUsuario] = useState('');
   const [senha, setSenha] = useState('');
   const [hover, setHover] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
+
+  const { signIn } = useAuth();
+    const { signOut } = useAuth();
+
+    function validateCredentials() {
+        if (!usuario.trim() || !senha.trim()) {
+            setAlertData({
+                title: 'Campos obrigatórios',
+                message: 'Por favor, preencha o nome e a senha.',
+                type: 'warning',
+            });
+            console.log(`title: 'Campos obrigatórios',
+                message: 'Por favor, preencha o nome e a senha.',
+                type: 'warning',`);
+            setIsAlertVisible(true);
+            return;
+        }
+
+        const success = signIn(usuario, senha);
+
+        if (success) {
+          console.log("Entrou");
+            setIsLoading(true);
+            setTimeout(() => {
+                router.push('/pokedex');
+            }, 5000);
+        } else {
+          console.log("não entrou");
+            setAlertData({
+                title: 'Acesso negado',
+                message: 'Nome ou senha incorretos. Tente novamente.',
+                type: 'error',
+            });
+            console.log(`title: 'Acesso negado',
+                message: 'Nome ou senha incorretos. Tente novamente.',
+                type: 'error',`);
+            setIsAlertVisible(true);
+            return signOut();
+        }
+    }
 
   const handleLogin = () => {
     console.log(
@@ -32,11 +75,8 @@ export default function Index() {
       usuario.trim() === 'Neyma' &&
       senha.trim() === 'vaiBrasil'
     ) {
-      console.log('entrou');
 
-      router.push('/pokedex');
     } else {
-      console.log('nao entrou');
 
       Alert.alert(
         'Erro',
@@ -59,8 +99,8 @@ export default function Index() {
         <Image
           source={
             hover
-              ? require('./assets/images/neymar-aberto.png')
-              : require('./assets/images/neymar-aberto.png')
+              ? require('@assets/images/neymar-aberto.png')
+              : require('@assets/images/neymar-aberto.png')
           }
           style={styles.neymarImage}
           resizeMode="contain"
@@ -94,7 +134,7 @@ export default function Index() {
 
             <Button
               title="Entrar"
-              onPress={handleLogin}
+              onPress={validateCredentials}
             />
           </View>
         )}
