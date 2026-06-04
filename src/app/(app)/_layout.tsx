@@ -1,7 +1,6 @@
 import { Stack, Redirect } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
-
-import { useAuth } from "@/context/AuthContext"
+import { useAuth } from "@/context/AuthContext";
 import { Colors } from "@/constants/colors";
 
 export default function AppLayout() {
@@ -20,5 +19,3 @@ export default function AppLayout() {
 
     return <Stack screenOptions={{ headerShown: false }} />;
 }
-
-export const useAuth = () => useContext(AuthContext);
