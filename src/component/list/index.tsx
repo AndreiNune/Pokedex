@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 import { Pokemon } from '@/@types/pokemon';
+import { Colors } from '@/constants/colors';
 import styles from './style';
 
 type ListaProps = {
@@ -34,7 +35,7 @@ export default function Lista({
   if (loading) {
     return (
       <View style={[styles.centerState, style]}>
-        <ActivityIndicator size="large" color="#d8b4fe" />
+        <ActivityIndicator size="large" color={Colors.light_purple} />
         <Text style={styles.stateText}>Carregando pokemons...</Text>
       </View>
     );

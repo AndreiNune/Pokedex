@@ -9,6 +9,7 @@ import {
 import { Pokemon } from '@/@types/pokemon';
 import Lista from '@/component/list';
 import { getPokemon } from '@/integration/pokemonIntegration';
+import { Colors } from '@/constants/colors';
 
 export default function Pokedex() {
   const [loading, setLoading] = useState(true);
@@ -60,18 +61,18 @@ export default function Pokedex() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: '#211033',
+    backgroundColor: Colors.white,
   },
   header: {
     paddingHorizontal: 20,
     paddingTop: 28,
     paddingBottom: 18,
-    backgroundColor: 'rgba(91, 33, 182, 0.34)',
-    borderBottomColor: 'rgba(216, 180, 254, 0.18)',
+    backgroundColor: Colors.dark_red,
+    borderBottomColor: Colors.black,
     borderBottomWidth: 1,
   },
   eyebrow: {
-    color: '#d8b4fe',
+    color: Colors.light_purple,
     fontSize: 12,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -79,12 +80,12 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   title: {
-    color: '#f5edff',
+    color: Colors.soft_purple,
     fontSize: 34,
     fontWeight: '800',
   },
   subtitle: {
-    color: 'rgba(245, 237, 255, 0.78)',
+    color: Colors.soft_purple_muted,
     fontSize: 14,
     lineHeight: 20,
     marginTop: 8,

@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { Colors } from '@/constants/colors';
 
 const styles = StyleSheet.create({
   listContent: {
@@ -13,8 +14,8 @@ const styles = StyleSheet.create({
   },
   card: {
     minHeight: 260,
-    backgroundColor: 'rgba(76, 29, 149, 0.72)',
-    borderColor: 'rgba(216, 180, 254, 0.22)',
+    backgroundColor: Colors.dark_blue,
+    borderColor: Colors.black,
     borderWidth: 1,
     borderRadius: 8,
     overflow: 'hidden',
@@ -23,7 +24,7 @@ const styles = StyleSheet.create({
     minHeight: 118,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(168, 85, 247, 0.16)',
+    backgroundColor: Colors.white,
     paddingVertical: 10,
   },
   pokemonImage: {
@@ -31,7 +32,7 @@ const styles = StyleSheet.create({
     height: 92,
   },
   index: {
-    color: '#e9d5ff',
+    color: Colors.pale_purple,
     fontSize: 13,
     fontWeight: '700',
   },
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
     padding: 14,
   },
   name: {
-    color: '#ffffff',
+    color: Colors.white,
     fontSize: 18,
     fontWeight: '800',
     textTransform: 'capitalize',
@@ -53,9 +54,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   typeBadge: {
-    color: '#f5edff',
-    backgroundColor: 'rgba(192, 132, 252, 0.28)',
-    borderColor: 'rgba(233, 213, 255, 0.28)',
+    color: Colors.soft_purple,
+    backgroundColor: Colors.badge_purple_background,
+    borderColor: Colors.badge_purple_border,
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 10,
@@ -74,12 +75,12 @@ const styles = StyleSheet.create({
   },
   statName: {
     flex: 1,
-    color: 'rgba(245, 237, 255, 0.78)',
+    color: Colors.soft_purple_muted,
     fontSize: 12,
     textTransform: 'capitalize',
   },
   statValue: {
-    color: '#f5edff',
+    color: Colors.soft_purple,
     fontSize: 12,
     fontWeight: '800',
   },
@@ -90,12 +91,12 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   stateText: {
-    color: '#f5edff',
+    color: Colors.soft_purple,
     fontSize: 15,
     marginTop: 12,
   },
   errorText: {
-    color: '#fecdd3',
+    color: Colors.soft_error,
     fontSize: 16,
     fontWeight: '700',
     textAlign: 'center',

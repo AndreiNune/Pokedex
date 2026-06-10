@@ -14,6 +14,7 @@ import { useAuth } from '@/context/AuthContext';
 
 import Button from '@/component/button';
 import Input from '@/component/input';
+import { Colors } from '@/constants/colors';
 
 export default function Index() {
   const [usuario, setUsuario] = useState('');
@@ -146,14 +147,14 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: Colors.auth_background,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
 
   title: {
-    color: 'white',
+    color: Colors.white,
     fontSize: 26,
     fontWeight: 'bold',
     marginBottom: 30,
@@ -175,12 +176,12 @@ const styles = StyleSheet.create({
 
     width: 280,
 
-    backgroundColor: 'rgba(255,255,255,0.95)',
+    backgroundColor: Colors.card_overlay,
 
     borderRadius: 20,
     padding: 20,
 
-    shadowColor: '#000',
+    shadowColor: Colors.black,
     shadowOffset: {
       width: 0,
       height: 5,
@@ -195,6 +196,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
-    color: '#150b80',
+    color: Colors.primary_blue,
   },
 });

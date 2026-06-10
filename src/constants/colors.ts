@@ -1,3 +1,22 @@
 export const Colors = {
-    
+    dark_red: '#420101',
+    red: '#FF0000',
+    black: '#000000',
+    white: '#FFFFFF',
+    gray: '#808080',
+    light_red: '#FF4D4D',
+    primary_blue: '#150b80',
+    dark_blue: '#0a0541',
+    dashboard_background: '#f5f6fa',
+    auth_background: '#111827',
+    input_border: '#ccc',
+    input_placeholder: '#999',
+    card_overlay: 'rgba(255,255,255,0.95)',
+    light_purple: '#d8b4fe',
+    pale_purple: '#e9d5ff',
+    soft_purple: '#f5edff',
+    soft_purple_muted: 'rgba(245, 237, 255, 0.78)',
+    badge_purple_background: 'rgba(192, 132, 252, 0.28)',
+    badge_purple_border: 'rgba(233, 213, 255, 0.28)',
+    soft_error: '#fecdd3',
 }
