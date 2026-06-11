@@ -5,6 +5,8 @@ import {
   Text,
   View,
 } from 'react-native';
+import Button from '@/component/button';
+import { useRouter } from 'expo-router';
 
 import { Pokemon } from '@/@types/pokemon';
 import Lista from '@/component/list';
@@ -12,6 +14,7 @@ import { getPokemon } from '@/integration/pokemonIntegration';
 import { Colors } from '@/constants/colors';
 
 export default function Pokedex() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
   const [pokemons, setPokemon] = useState<Pokemon[]>([]);
@@ -54,6 +57,9 @@ export default function Pokedex() {
         erro={erro}
         columns={2}
       />
+
+      <Button title="Ver meus times" onPress={() => router.push('/teams')} style={styles.button} />
+      <Button title="Acessar Perfil" onPress={() => router.push('/profile')} style={styles.button} />
     </SafeAreaView>
   );
 }
@@ -89,5 +95,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     marginTop: 8,
+  },
+  button: {
+    marginTop: 12,
   },
 });

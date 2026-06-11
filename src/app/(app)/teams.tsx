@@ -1,30 +1,47 @@
-import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View, ActivityIndicator, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import Button from '@/component/button';
 import { Colors } from '@/constants/colors';
-
-const pokemonTeams = [
-  {
-    name: 'Time Kanto',
-    description: 'Equipe equilibrada para batalhas classicas.',
-    members: ['Pikachu', 'Charizard', 'Blastoise', 'Venusaur', 'Snorlax', 'Gengar'],
-  },
-  {
-    name: 'Time Velocidade',
-    description: 'Foco em ataque rapido e vantagem de turno.',
-    members: ['Jolteon', 'Aerodactyl', 'Alakazam', 'Dugtrio', 'Persian', 'Starmie'],
-  },
-  {
-    name: 'Time Defesa',
-    description: 'Formacao resistente para segurar lutas longas.',
-    members: ['Lapras', 'Onix', 'Slowbro', 'Chansey', 'Vaporeon', 'Dragonite'],
-  },
-];
+import { getPokemon } from '@/integration/pokemonIntegration'; // Ajuste o caminho do import da sua API aqui
+import { Pokemon } from '@/@types/pokemon';
 
 export default function Teams() {
   const router = useRouter();
+  
+  // Estados para gerenciar a lista completa da API, o time gerado e o loading
+  const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
+  const [randomTeam, setRandomTeam] = useState<Pokemon[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  // Busca os 151 Pokémon logo ao carregar a tela
+  useEffect(() => {
+    async function loadPokemonData() {
+      try {
+        const data = await getPokemon(151);
+        setAllPokemon(data);
+        generateRandomTeam(data); // Gera o primeiro time assim que carrega
+      } catch (error) {
+        console.error("Erro ao buscar Pokémon para o time:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadPokemonData();
+  }, []);
+
+  // Função que embaralha e seleciona 5 Pokémon únicos
+  const generateRandomTeam = (pokemonList: Pokemon[]) => {
+    if (pokemonList.length === 0) return;
+
+    // Cria uma cópia da lista para não mutar o estado original
+    const shuffled = [...pokemonList].sort(() => 0.5 - Math.random());
+    
+    // Seleciona os 5 primeiros elementos do array embaralhado
+    const selectedTeam = shuffled.slice(0, 5);
+    setRandomTeam(selectedTeam);
+  };
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -35,20 +52,40 @@ export default function Teams() {
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        {pokemonTeams.map((team) => (
-          <View key={team.name} style={styles.card}>
-            <Text style={styles.cardTitle}>{team.name}</Text>
-            <Text style={styles.cardDescription}>{team.description}</Text>
+        
+        {/* --- Seção do time aleatório via api --- */}
+        <View style={[styles.card, styles.randomCard]}>
+          {/* --- Andrei: André, fazer --- */}
+          <Text style={[styles.cardTitle, styles.randomTitle]}>Seu Time Aleatório</Text>
 
+          {loading ? (
+            <ActivityIndicator size="small" color={Colors.primary_blue} style={{ marginVertical: 10 }} />
+          ) : (
             <View style={styles.memberGrid}>
-              {team.members.map((member) => (
-                <Text key={`${team.name}-${member}`} style={styles.memberBadge}>
-                  {member}
-                </Text>
+              {randomTeam.map((pokemon) => (
+                <View key={`random-${pokemon.id}`} style={[styles.memberBadge, styles.randomBadge]}>
+                  {/* 2. EXIBIÇÃO DA IMAGEM: Passamos a URL da API no 'uri' */}
+                  {pokemon.imagem && (
+                    <Image 
+                      source={{ uri: pokemon.imagem }} 
+                      style={styles.pokemonImage} 
+                    />
+                  )}
+                  <Text style={styles.pokemonName}>
+                    {pokemon.nome.charAt(0).toUpperCase() + pokemon.nome.slice(1)}
+                  </Text>
+                </View>
               ))}
             </View>
-          </View>
-        ))}
+          )}
+
+          <Button 
+            title="Sortear Novo Time" 
+            onPress={() => generateRandomTeam(allPokemon)} 
+            style={styles.rerollButton}
+            disabled={loading}
+          />
+        </View>
 
         <Button title="Ver perfil" onPress={() => router.push('/profile')} style={styles.button} />
         <Button title="Voltar para Pokedex" onPress={() => router.push('/pokedex')} style={styles.button} />
@@ -101,6 +138,23 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 14,
   },
+  pokemonImage: {
+    width: 40,
+    height: 40,
+    marginRight: 4,
+  },
+  pokemonName: {
+    color: Colors.white,
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  randomCard: {
+    borderColor: Colors.primary_blue,
+    borderWidth: 1.5,
+  },
+  randomTitle: {
+    color: Colors.dark_red,
+  },
   cardTitle: {
     color: Colors.primary_blue,
     fontSize: 20,
@@ -127,7 +181,15 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
   },
+  randomBadge: {
+    backgroundColor: Colors.dark_red,
+    color: Colors.white,
+  },
   button: {
     marginTop: 12,
   },
+  rerollButton: {
+    marginTop: 16,
+    backgroundColor: Colors.primary_blue,
+  }
 });
