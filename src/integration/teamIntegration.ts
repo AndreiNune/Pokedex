@@ -31,5 +31,12 @@ export async function addCapturedPokemon(
     pokemonId: number,
     token: string
 ): Promise<void> {
-    await api.put()
+    await api.put('/pokemon/v1/captured', null, {
+        params: {
+            'user-id': userId,
+            'pokemon-id': String(pokemonId),
+        },
+        headers: { Authorization: `Bearer $(token)` },
+    });
 }
+
