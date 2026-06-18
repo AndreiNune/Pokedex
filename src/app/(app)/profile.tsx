@@ -1,8 +1,10 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import Button from '@/component/button';
+import Navbar from '@/component/navbar';
+
 import { Colors } from '@/constants/colors';
 import { useAuth } from '@/context/AuthContext';
 
@@ -17,11 +19,12 @@ export default function Profile() {
 
   return (
     <SafeAreaView style={styles.screen}>
-      <View style={styles.header}>
-        <Text style={styles.eyebrow}>Treinador</Text>
-        <Text style={styles.title}>{user || 'Player'}</Text>
-        <Text style={styles.subtitle}>Perfil do jogador conectado.</Text>
-      </View>
+      <ScrollView>
+        <Navbar
+        eyebrow="Treinador"
+        title={user || 'Player'}
+        subtitle="Perfil do jogador conectado."
+      />
 
       <View style={styles.content}>
         <View style={styles.avatar}>
@@ -43,10 +46,8 @@ export default function Profile() {
           <Text style={styles.value}>Online</Text>
         </View>
 
-        <Button title="Ver meus times" onPress={() => router.push('/teams')} style={styles.button} />
-        <Button title="Voltar para Pokedex" onPress={() => router.push('/pokedex')} style={styles.button} />
-        <Button title="Sair" onPress={handleSignOut} style={styles.button} />
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
