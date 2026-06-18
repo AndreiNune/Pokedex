@@ -40,3 +40,16 @@ export async function addCapturedPokemon(
     });
 }
 
+export async function deleteCapturedPokemon(
+    userId: string,
+    pokemonId: number,
+    token: string
+): Promise<void> {
+    await api.delete('/pokemon/v1/captured', {
+        params: {
+            'user-id': userId,
+            'pokemon-id': String(pokemonId),
+        },
+        headers: {Authorization: `Bearer $(token)`},
+    })
+}
