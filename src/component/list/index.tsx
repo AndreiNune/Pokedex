@@ -4,6 +4,7 @@ import {
   DimensionValue,
   FlatList,
   Image,
+  Pressable,
   StyleProp,
   Text,
   View,
@@ -36,7 +37,7 @@ export default function Lista({
     return (
       <View style={[styles.centerState, style]}>
         <ActivityIndicator size="large" color={Colors.light_purple} />
-        <Text style={styles.stateText}>Carregando pokemons...</Text>
+        <Text style={styles.stateText}>Carregando pokémons...</Text>
       </View>
     );
   }
@@ -63,7 +64,13 @@ export default function Lista({
 
         return (
           <View style={[styles.itemWrapper, { width: itemWidth }]}>
-            <View style={styles.card}>
+            <Pressable
+              style={({ hovered, pressed }: { hovered?: boolean; pressed: boolean }) => [
+                styles.card,
+                hovered && styles.cardHover,
+                pressed && styles.cardPressed,
+              ]}
+            >
               <View style={styles.imagePanel}>
                 <Image
                   source={{ uri: item.imagem }}
@@ -93,7 +100,7 @@ export default function Lista({
                   ))}
                 </View>
               </View>
-            </View>
+            </Pressable>
           </View>
         );
       }}

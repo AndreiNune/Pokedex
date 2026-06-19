@@ -24,7 +24,7 @@ export default function Index() {
 
   async function validateCredentials() {
     if (!usuario.trim() || !senha.trim()) {
-      Alert.alert('Campos obrigatorios', 'Por favor, preencha o usuario e a senha.');
+      Alert.alert('Campos obrigatórios', 'Por favor, preencha o usuário e a senha.');
       return;
     }
 
@@ -37,7 +37,7 @@ export default function Index() {
     }
 
     setIsLoading(false);
-    Alert.alert('Acesso negado', 'Usuario ou senha incorretos. Tente novamente.');
+    Alert.alert('Acesso negado', 'Usuário ou senha incorretos. Tente novamente.');
   }
 
   return (
@@ -45,8 +45,8 @@ export default function Index() {
       <View style={styles.header}>
         <View style={styles.headerContent}>
           <Text style={styles.eyebrow}>Treinador</Text>
-          <Text style={styles.title}>Pokedex</Text>
-          <Text style={styles.subtitle}>Entre para acessar seu perfil, sua Pokedex e seus times.</Text>
+          <Text style={styles.title}>Pokédex</Text>
+          <Text style={styles.subtitle}>Entre para acessar seu perfil, sua Pokédex e seus times.</Text>
         </View>
       </View>
 
@@ -55,7 +55,7 @@ export default function Index() {
           <Text style={styles.loginTitle}>Login</Text>
 
           <Input
-            placeholder="Usuario"
+            placeholder="Usuário"
             value={usuario}
             onChangeText={setUsuario}
             autoCapitalize="none"
@@ -77,7 +77,7 @@ export default function Index() {
           />
 
           <View style={styles.registerRow}>
-            <Text style={styles.registerText}>Ainda nao tem conta?</Text>
+            <Text style={styles.registerText}>Ainda não tem conta?</Text>
             <TouchableOpacity onPress={() => router.push('/register')}>
               <Text style={styles.registerLink}>Cadastrar</Text>
             </TouchableOpacity>
@@ -91,14 +91,14 @@ export default function Index() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: Colors.dashboard_background,
+    backgroundColor: Colors.auth_background,
   },
   header: {
     paddingHorizontal: 20,
     paddingTop: 28,
     paddingBottom: 18,
-    backgroundColor: Colors.dark_red,
-    borderBottomColor: Colors.black,
+    backgroundColor: Colors.black,
+    borderBottomColor: Colors.neon_red,
     borderBottomWidth: 1,
   },
   headerContent: {
@@ -107,7 +107,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   eyebrow: {
-    color: Colors.light_purple,
+    color: Colors.neon_blue,
+    fontFamily: Colors.font_pixel,
     fontSize: 12,
     fontWeight: '700',
     letterSpacing: 0,
@@ -115,12 +116,13 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   title: {
-    color: Colors.soft_purple,
+    color: Colors.text,
+    fontFamily: Colors.font_pixel,
     fontSize: 34,
     fontWeight: '800',
   },
   subtitle: {
-    color: Colors.soft_purple_muted,
+    color: Colors.text_muted,
     fontSize: 14,
     lineHeight: 20,
     marginTop: 8,
@@ -134,14 +136,15 @@ const styles = StyleSheet.create({
   loginCard: {
     width: '100%',
     maxWidth: 420,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.surface,
     borderColor: Colors.input_border,
     borderRadius: 8,
     borderWidth: 1,
     padding: 20,
   },
   loginTitle: {
-    color: Colors.primary_blue,
+    color: Colors.neon_blue,
+    fontFamily: Colors.font_pixel,
     fontSize: 22,
     fontWeight: '800',
     marginBottom: 20,
@@ -161,11 +164,12 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   registerText: {
-    color: Colors.gray,
+    color: Colors.text_muted,
     fontSize: 14,
   },
   registerLink: {
-    color: Colors.primary_blue,
+    color: Colors.neon_blue,
+    fontFamily: Colors.font_pixel,
     fontSize: 14,
     fontWeight: '800',
   },

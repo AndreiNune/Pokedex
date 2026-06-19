@@ -65,7 +65,7 @@ export default function Navbar({
               router.push('/pokedex');
             }}
           >
-            <Text style={styles.menuText}>Pokedex</Text>
+            <Text style={styles.menuText}>Pokédex</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -85,7 +85,7 @@ export default function Navbar({
               router.push('/profile');
             }}
           >
-            <Text style={styles.menuText}>Ver Perfil</Text>
+            <Text style={styles.menuText}>Ver perfil</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -95,7 +95,7 @@ export default function Navbar({
               router.push('/teams');
             }}
           >
-            <Text style={styles.menuText}>Ver Meus Times</Text>
+            <Text style={styles.menuText}>Ver meus times</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -105,7 +105,7 @@ export default function Navbar({
               router.push('/box');
             }}
           >
-            <Text style={styles.menuText}>Box Pokemon</Text>
+            <Text style={styles.menuText}>Box Pokémon</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -135,12 +135,18 @@ export default function Navbar({
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: Colors.dark_red,
+    backgroundColor: Colors.black,
   },
   navbar: {
-    backgroundColor: Colors.dark_red,
+    backgroundColor: Colors.black,
+    borderBottomColor: Colors.neon_red,
+    borderBottomWidth: 1,
     paddingHorizontal: 20,
     paddingVertical: 20,
+    shadowColor: Colors.neon_shadow_red,
+    shadowOpacity: 0.8,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 0 },
   },
   navbarContent: {
     width: '100%',
@@ -155,19 +161,21 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   eyebrow: {
-    color: Colors.light_purple,
+    color: Colors.neon_blue,
+    fontFamily: Colors.font_pixel,
     fontSize: 12,
     fontWeight: '700',
     textTransform: 'uppercase',
     marginBottom: 4,
   },
   title: {
-    color: Colors.soft_purple,
+    color: Colors.text,
+    fontFamily: Colors.font_pixel,
     fontSize: 32,
     fontWeight: '800',
   },
   subtitle: {
-    color: Colors.soft_purple_muted,
+    color: Colors.text_muted,
     fontSize: 14,
     marginTop: 6,
   },
@@ -177,18 +185,25 @@ const styles = StyleSheet.create({
     padding: 8,
     justifyContent: 'center',
     gap: 5,
+    borderColor: Colors.neon_blue,
+    borderRadius: 8,
+    borderWidth: 1,
+    backgroundColor: Colors.surface,
   },
   menuLine: {
     width: 24,
     height: 3,
     borderRadius: 2,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.neon_blue,
   },
   menu: {
     width: '100%',
     maxWidth: 960,
     alignSelf: 'center',
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.surface,
+    borderColor: Colors.neon_blue,
+    borderWidth: 1,
+    borderTopWidth: 0,
     borderBottomLeftRadius: 8,
     borderBottomRightRadius: 8,
     overflow: 'hidden',
@@ -199,12 +214,14 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.input_border,
   },
   menuText: {
-    color: Colors.black,
+    color: Colors.text,
+    fontFamily: Colors.font_pixel,
     fontSize: 16,
     fontWeight: '600',
   },
   logoutText: {
     color: Colors.danger,
+    fontFamily: Colors.font_pixel,
     fontSize: 16,
     fontWeight: '700',
   },

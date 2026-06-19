@@ -12,9 +12,9 @@ export default function Dashboard() {
   return (
     <SafeAreaView style={styles.screen}>
       <Navbar
-        eyebrow="Inicio"
+        eyebrow="Início"
         title="Dashboard"
-        subtitle="Acesse rapidamente as areas principais."
+        subtitle="Acesse rapidamente as áreas principais."
       />
 
       <View style={styles.content}>
@@ -22,9 +22,9 @@ export default function Dashboard() {
           <Text style={styles.title}>Bem-vindo ao Dashboard!</Text>
           <Button title="Abrir perfil" onPress={() => router.push('/profile')} style={styles.button} />
           <Button title="Meus times" onPress={() => router.push('/teams')} style={styles.button} />
-          <Button title="Box Pokemon" onPress={() => router.push('/box')} style={styles.button} />
+          <Button title="Box Pokémon" onPress={() => router.push('/box')} style={styles.button} />
           <Button title="Batalha" onPress={() => router.push('/battle')} style={styles.button} />
-          <Button title="Pokedex" onPress={() => router.push('/pokedex')} style={styles.button} />
+          <Button title="Pokédex" onPress={() => router.push('/pokedex')} style={styles.button} />
         </View>
       </View>
     </SafeAreaView>
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   panel: {
     width: '100%',
     maxWidth: 420,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.surface,
     borderColor: Colors.input_border,
     borderRadius: 8,
     borderWidth: 1,
@@ -54,7 +54,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: Colors.primary_blue,
+    color: Colors.neon_blue,
+    fontFamily: Colors.font_pixel,
     marginBottom: 12,
     textAlign: 'center',
   },

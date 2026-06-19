@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Alert, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Pokemon } from '@/@types/pokemon';
 import { TeamPokemon } from '@/@types/team';
@@ -45,7 +45,7 @@ function getComparisonSymbol(leftValue: number, rightValue: number) {
 }
 
 function getDifferenceDescription(leftPokemon: Pokemon, rightPokemon: Pokemon, powerName: string, difference: number) {
-  if (difference === 0) return `${normalizeName(leftPokemon.nome)} e ${normalizeName(rightPokemon.nome)} estao empatados em ${powerName}.`;
+  if (difference === 0) return `${normalizeName(leftPokemon.nome)} e ${normalizeName(rightPokemon.nome)} estão empatados em ${powerName}.`;
 
   const strongerPokemon = difference > 0 ? leftPokemon : rightPokemon;
   const weakerPokemon = difference > 0 ? rightPokemon : leftPokemon;
@@ -65,7 +65,7 @@ function PokemonSummary({ pokemon, title }: { pokemon: Pokemon | null; title: st
           </View>
         </View>
       ) : (
-        <Text style={styles.description}>Selecione um Pokemon.</Text>
+        <Text style={styles.description}>Selecione um Pokémon.</Text>
       )}
     </View>
   );
@@ -78,11 +78,11 @@ function PokemonComparisonCard({ boxPokemon, teamPokemon }: { boxPokemon: Pokemo
 
   return (
     <View style={styles.statusCard}>
-      <Text style={styles.statusTitle}>Comparacao de Status</Text>
+      <Text style={styles.statusTitle}>Comparação de Status</Text>
 
       <View style={styles.summaryGrid}>
-        <PokemonSummary title="Pokemon da Box" pokemon={boxPokemon} />
-        <PokemonSummary title="Pokemon do Time" pokemon={teamPokemon} />
+        <PokemonSummary title="Pokémon da Box" pokemon={boxPokemon} />
+        <PokemonSummary title="Pokémon do Time" pokemon={teamPokemon} />
       </View>
 
       {boxPokemon && teamPokemon ? (
@@ -146,7 +146,7 @@ function PokemonComparisonCard({ boxPokemon, teamPokemon }: { boxPokemon: Pokemo
           })}
         </View>
       ) : (
-        <Text style={styles.description}>Selecione um Pokemon da box e um Pokemon do time para comparar.</Text>
+        <Text style={styles.description}>Selecione um Pokémon da box e um Pokémon do time para comparar.</Text>
       )}
     </View>
   );
@@ -239,7 +239,7 @@ export default function Box() {
 
   async function handleReplaceTeamPokemon() {
     if (!userId || !selectedBoxPokemon || !selectedTeamPokemon) {
-      Alert.alert('Selecao obrigatoria', 'Escolha um Pokemon da box e um Pokemon do time.');
+      Alert.alert('Seleção obrigatória', 'Escolha um Pokémon da box e um Pokémon do time.');
       return;
     }
 
@@ -277,10 +277,10 @@ export default function Box() {
 
       setSelectedBoxPokemon(null);
       setSelectedTeamPokemon(null);
-      Alert.alert('Time atualizado', 'Pokemon trocado com a box.');
+      Alert.alert('Time atualizado', 'Pokémon trocado com a box.');
     } catch (error) {
       console.error('Erro ao atualizar time:', error);
-      Alert.alert('Erro', 'Nao foi possivel atualizar o time.');
+      Alert.alert('Erro', 'Não foi possível atualizar o time.');
     } finally {
       setSaving(false);
     }
@@ -288,7 +288,7 @@ export default function Box() {
 
   async function handleReleasePokemon() {
     if (!userId || !selectedBoxPokemon) {
-      Alert.alert('Selecao obrigatoria', 'Escolha um Pokemon da box para liberar.');
+      Alert.alert('Seleção obrigatória', 'Escolha um Pokémon da box para liberar.');
       return;
     }
 
@@ -298,8 +298,8 @@ export default function Box() {
       setBoxIds(nextBox);
       setSelectedBoxPokemon(null);
     } catch (error) {
-      console.error('Erro ao remover Pokemon capturado:', error);
-      Alert.alert('Erro', 'Nao foi possivel remover este Pokemon da box.');
+      console.error('Erro ao remover Pokémon capturado:', error);
+      Alert.alert('Erro', 'Não foi possível remover este Pokémon da box.');
     } finally {
       setSaving(false);
     }
@@ -309,7 +309,7 @@ export default function Box() {
     <SafeAreaView style={styles.screen}>
       <Navbar
         eyebrow="Capturados"
-        title="Box Pokemon"
+        title="Box Pokémon"
         subtitle="Guarde recompensas de batalha e monte seu time."
       />
 
@@ -321,21 +321,23 @@ export default function Box() {
             <View style={styles.card}>
               <Text style={styles.cardTitle}>Minha Box</Text>
               {capturedPokemon.length === 0 ? (
-                <Text style={styles.description}>Venca batalhas para enviar Pokemon inimigos para sua box.</Text>
+                <Text style={styles.description}>Vença batalhas para enviar Pokémon inimigos para sua box.</Text>
               ) : (
                 <View style={styles.grid}>
                   {capturedPokemon.map((pokemon) => (
-                    <TouchableOpacity
+                    <Pressable
                       key={`box-${pokemon.id}`}
-                      style={[
+                      style={({ hovered, pressed }: { hovered?: boolean; pressed: boolean }) => [
                         styles.pokemonBadge,
                         selectedBoxPokemon?.id === pokemon.id && styles.selectedBadge,
+                        hovered && styles.pokemonBadgeHover,
+                        pressed && styles.pokemonBadgePressed,
                       ]}
                       onPress={() => setSelectedBoxPokemon(pokemon)}
                     >
                       {pokemon.imagem && <Image source={{ uri: pokemon.imagem }} style={styles.pokemonImage} />}
                       <Text style={styles.pokemonName}>{normalizeName(pokemon.nome)}</Text>
-                    </TouchableOpacity>
+                    </Pressable>
                   ))}
                 </View>
               )}
@@ -349,17 +351,19 @@ export default function Box() {
               ) : (
                 <View style={styles.grid}>
                   {team.map((pokemon) => (
-                    <TouchableOpacity
+                    <Pressable
                       key={`team-${pokemon.id}`}
-                      style={[
+                      style={({ hovered, pressed }: { hovered?: boolean; pressed: boolean }) => [
                         styles.teamBadge,
                         selectedTeamPokemon?.id === pokemon.id && styles.selectedBadge,
+                        hovered && styles.pokemonBadgeHover,
+                        pressed && styles.pokemonBadgePressed,
                       ]}
                       onPress={() => setSelectedTeamPokemon(pokemon)}
                     >
                       {pokemon.imagem && <Image source={{ uri: pokemon.imagem }} style={styles.pokemonImage} />}
                       <Text style={styles.pokemonName}>{normalizeName(pokemon.nome)}</Text>
-                    </TouchableOpacity>
+                    </Pressable>
                   ))}
                 </View>
               )}
@@ -368,9 +372,9 @@ export default function Box() {
             <View style={styles.detailsLayout}>
               <View style={styles.actionsColumn}>
                 <View style={styles.card}>
-                  <Text style={styles.cardTitle}>Acoes</Text>
+                  <Text style={styles.cardTitle}>Ações</Text>
                   <Text style={styles.description}>
-                    Selecione um Pokemon da box e um Pokemon do time para fazer a troca.
+                    Selecione um Pokémon da box e um Pokémon do time para fazer a troca.
                   </Text>
                   <Button
                     title={saving ? 'Salvando...' : 'Adicionar ao time'}
@@ -379,7 +383,7 @@ export default function Box() {
                     style={styles.button}
                   />
                   <Button
-                    title="Liberar Pokemon da box"
+                    title="Liberar Pokémon da box"
                     onPress={handleReleasePokemon}
                     disabled={saving}
                     style={styles.releaseButton}
@@ -412,7 +416,7 @@ const styles = StyleSheet.create({
     paddingBottom: 28,
   },
   card: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.surface,
     borderColor: Colors.input_border,
     borderRadius: 8,
     borderWidth: 1,
@@ -420,13 +424,14 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   cardTitle: {
-    color: Colors.primary_blue,
+    color: Colors.neon_blue,
+    fontFamily: Colors.font_pixel,
     fontSize: 20,
     fontWeight: '800',
     marginBottom: 8,
   },
   description: {
-    color: Colors.gray,
+    color: Colors.text_muted,
     fontSize: 14,
     lineHeight: 20,
   },
@@ -437,7 +442,9 @@ const styles = StyleSheet.create({
   },
   pokemonBadge: {
     alignItems: 'center',
-    backgroundColor: Colors.primary_blue,
+    backgroundColor: Colors.surface_elevated,
+    borderColor: Colors.neon_blue,
+    borderWidth: 1,
     borderRadius: 8,
     flexDirection: 'row',
     paddingHorizontal: 10,
@@ -446,14 +453,30 @@ const styles = StyleSheet.create({
   teamBadge: {
     alignItems: 'center',
     backgroundColor: Colors.dark_red,
+    borderColor: Colors.neon_red,
+    borderWidth: 1,
     borderRadius: 8,
     flexDirection: 'row',
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
   selectedBadge: {
-    borderColor: Colors.light_purple,
+    borderColor: Colors.neon_blue,
     borderWidth: 2,
+    shadowColor: Colors.neon_shadow_blue,
+    shadowOpacity: 1,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 0 },
+  },
+  pokemonBadgeHover: {
+    shadowColor: Colors.neon_shadow_blue,
+    shadowOpacity: 0.9,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 0 },
+    transform: [{ translateY: -2 }, { scale: 1.04 }],
+  },
+  pokemonBadgePressed: {
+    transform: [{ translateY: 1 }, { scale: 0.97 }],
   },
   pokemonImage: {
     width: 40,
@@ -462,6 +485,7 @@ const styles = StyleSheet.create({
   },
   pokemonName: {
     color: Colors.white,
+    fontFamily: Colors.font_pixel,
     fontSize: 12,
     fontWeight: '700',
   },
@@ -479,14 +503,15 @@ const styles = StyleSheet.create({
     minWidth: 280,
   },
   statusCard: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.surface,
     borderColor: Colors.input_border,
     borderRadius: 8,
     borderWidth: 1,
     padding: 14,
   },
   statusTitle: {
-    color: Colors.primary_blue,
+    color: Colors.neon_blue,
+    fontFamily: Colors.font_pixel,
     fontSize: 16,
     fontWeight: '800',
     marginBottom: 10,
@@ -498,7 +523,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   summaryCard: {
-    backgroundColor: Colors.dashboard_background,
+    backgroundColor: Colors.surface_elevated,
     borderColor: Colors.input_border,
     borderRadius: 8,
     borderWidth: 1,
@@ -507,7 +532,8 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   summaryTitle: {
-    color: Colors.primary_blue,
+    color: Colors.neon_blue,
+    fontFamily: Colors.font_pixel,
     fontSize: 13,
     fontWeight: '800',
     marginBottom: 8,
@@ -525,12 +551,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statusName: {
-    color: Colors.black,
+    color: Colors.text,
     fontSize: 16,
     fontWeight: '800',
   },
   statusTypes: {
-    color: Colors.gray,
+    color: Colors.text_muted,
     fontSize: 12,
     marginTop: 2,
   },
@@ -549,17 +575,17 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   statusLabel: {
-    color: Colors.black,
+    color: Colors.text,
     fontSize: 13,
     fontWeight: '700',
   },
   comparisonSymbol: {
-    color: Colors.dark_red,
+    color: Colors.neon_red,
     fontSize: 14,
     fontWeight: '800',
   },
   comparisonWin: {
-    color: Colors.primary_blue,
+    color: Colors.neon_blue,
   },
   comparisonLose: {
     color: Colors.danger,
@@ -570,13 +596,13 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   barSideLabel: {
-    color: Colors.gray,
+    color: Colors.text_muted,
     fontSize: 11,
     fontWeight: '800',
     width: 34,
   },
   barTrack: {
-    backgroundColor: Colors.input_border,
+    backgroundColor: Colors.dark_blue,
     borderRadius: 8,
     flex: 1,
     height: 10,
@@ -587,7 +613,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   barValue: {
-    color: Colors.black,
+    color: Colors.text,
     fontSize: 12,
     fontWeight: '800',
     marginLeft: 8,
@@ -595,7 +621,7 @@ const styles = StyleSheet.create({
     width: 30,
   },
   comparisonDescription: {
-    color: Colors.gray,
+    color: Colors.text_muted,
     fontSize: 12,
     lineHeight: 17,
     marginTop: 2,

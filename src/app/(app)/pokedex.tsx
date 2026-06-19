@@ -23,8 +23,8 @@ export default function Pokedex() {
         const data = await getPokemon(151);
         setPokemon(data);
       } catch (e) {
-        console.error('Erro ao carregar pokemons:', e);
-        setErro('Nao foi possivel carregar a Pokedex.');
+        console.error('Erro ao carregar pokémons:', e);
+        setErro('Não foi possível carregar a Pokédex.');
       } finally {
         setLoading(false);
       }
@@ -39,14 +39,14 @@ export default function Pokedex() {
 
   const columns = width >= 900 ? 3 : width >= 560 ? 2 : 1;
   const subtitle = pokemons.length > 0
-    ? `${pokemons.length} pokemons encontrados em ${totalTipos} tipos`
-    : 'Listagem dos pokemons classicos da PokeAPI';
+    ? `${pokemons.length} pokémons encontrados em ${totalTipos} tipos`
+    : 'Listagem dos pokémons clássicos da PokeAPI';
 
   return (
     <SafeAreaView style={styles.screen}>
       <Navbar
-        eyebrow="Primeira geracao"
-        title="Pokedex"
+        eyebrow="Primeira geração"
+        title="Pokédex"
         subtitle={subtitle}
       />
 
@@ -64,7 +64,7 @@ export default function Pokedex() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.dashboard_background,
   },
   listContent: {
     width: '100%',

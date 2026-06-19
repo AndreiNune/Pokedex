@@ -65,7 +65,7 @@ export default function Profile() {
               </View>
 
               <View style={styles.statBox}>
-                <Text style={styles.label}>Vitorias</Text>
+                <Text style={styles.label}>Vitórias</Text>
                 <Text style={styles.value}>{stats?.vitorias || '0'}</Text>
               </View>
 
@@ -102,11 +102,18 @@ const styles = StyleSheet.create({
     borderRadius: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.primary_blue,
+    backgroundColor: Colors.surface_elevated,
+    borderColor: Colors.neon_blue,
+    borderWidth: 1,
+    shadowColor: Colors.neon_shadow_blue,
+    shadowOpacity: 0.9,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 0 },
     marginBottom: 20,
   },
   avatarText: {
-    color: Colors.white,
+    color: Colors.neon_blue,
+    fontFamily: Colors.font_pixel,
     fontSize: 40,
     fontWeight: '800',
   },
@@ -115,19 +122,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.input_border,
     borderRadius: 8,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.surface,
     padding: 16,
     marginBottom: 12,
   },
   label: {
-    color: Colors.gray,
+    color: Colors.text_muted,
+    fontFamily: Colors.font_pixel,
     fontSize: 12,
     fontWeight: '700',
     textTransform: 'uppercase',
     marginBottom: 6,
   },
   value: {
-    color: Colors.black,
+    color: Colors.text,
     fontSize: 18,
     fontWeight: '700',
   },
@@ -140,7 +148,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.input_border,
     borderRadius: 8,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.surface,
     padding: 16,
   },
 });

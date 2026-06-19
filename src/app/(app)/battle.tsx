@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Pokemon } from '@/@types/pokemon';
 import Button from '@/component/button';
@@ -162,7 +162,7 @@ export default function Battle() {
       setSavingReward(true);
       await addStoredCapturedPokemon(userId, capturedPokemon.id);
     } catch (error) {
-      console.error('Erro ao adicionar Pokemon capturado:', error);
+      console.error('Erro ao adicionar Pokémon capturado:', error);
     } finally {
       setSavingReward(false);
     }
@@ -230,7 +230,7 @@ export default function Battle() {
     if (playerWins >= 3) {
       const capturedPokemon = pickRandom(battleEnemyTeam);
       setReward(capturedPokemon);
-      setBattleResult('Vitoria! Um Pokemon do time inimigo foi enviado para sua box.');
+      setBattleResult('Vitória! Um Pokémon do time inimigo foi enviado para sua box.');
       await rewardCapturedPokemon(capturedPokemon);
       await updateBattleStats(true);
       return;
@@ -246,7 +246,7 @@ export default function Battle() {
       <Navbar
         eyebrow="Arena"
         title="Batalha"
-        subtitle="Vence quem chegar a 3 vitorias primeiro."
+        subtitle="Vence quem chegar a 3 vitórias primeiro."
       />
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -272,7 +272,7 @@ export default function Battle() {
                 disabled={isBattling || playerTeam.length < 5}
               />
               {playerTeam.length < 5 && (
-                <Text style={styles.description}>Seu time precisa ter 5 Pokemon. Sorteie um time de teste na tela Times.</Text>
+                <Text style={styles.description}>Seu time precisa ter 5 Pokémon. Sorteie um time de teste na tela Times.</Text>
               )}
             </View>
 
@@ -283,10 +283,17 @@ export default function Battle() {
                   <Text style={styles.teamTitle}>Seu Time</Text>
                   <View style={styles.teamGrid}>
                     {playerTeam.map((pokemon) => (
-                      <View key={`player-team-${pokemon.id}`} style={styles.teamPokemon}>
+                      <Pressable
+                        key={`player-team-${pokemon.id}`}
+                        style={({ hovered, pressed }: { hovered?: boolean; pressed: boolean }) => [
+                          styles.teamPokemon,
+                          hovered && styles.teamPokemonHover,
+                          pressed && styles.teamPokemonPressed,
+                        ]}
+                      >
                         {pokemon.imagem && <Image source={{ uri: pokemon.imagem }} style={styles.teamPokemonImage} />}
                         <Text style={styles.teamPokemonName}>{normalizeName(pokemon.nome)}</Text>
-                      </View>
+                      </Pressable>
                     ))}
                   </View>
                 </View>
@@ -295,10 +302,17 @@ export default function Battle() {
                   <Text style={styles.teamTitle}>Time Inimigo</Text>
                   <View style={styles.teamGrid}>
                     {enemyTeam.map((pokemon) => (
-                      <View key={`enemy-team-${pokemon.id}`} style={styles.enemyPokemon}>
+                      <Pressable
+                        key={`enemy-team-${pokemon.id}`}
+                        style={({ hovered, pressed }: { hovered?: boolean; pressed: boolean }) => [
+                          styles.enemyPokemon,
+                          hovered && styles.teamPokemonHover,
+                          pressed && styles.teamPokemonPressed,
+                        ]}
+                      >
                         {pokemon.imagem && <Image source={{ uri: pokemon.imagem }} style={styles.teamPokemonImage} />}
                         <Text style={styles.teamPokemonName}>{normalizeName(pokemon.nome)}</Text>
-                      </View>
+                      </Pressable>
                     ))}
                   </View>
                 </View>
@@ -357,7 +371,7 @@ const styles = StyleSheet.create({
     paddingBottom: 28,
   },
   card: {
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.surface,
     borderColor: Colors.input_border,
     borderRadius: 8,
     borderWidth: 1,
@@ -365,26 +379,28 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   scoreCard: {
-    backgroundColor: Colors.white,
-    borderColor: Colors.primary_blue,
+    backgroundColor: Colors.surface,
+    borderColor: Colors.neon_blue,
     borderRadius: 8,
     borderWidth: 1,
     marginBottom: 14,
     padding: 16,
   },
   cardTitle: {
-    color: Colors.primary_blue,
+    color: Colors.neon_blue,
+    fontFamily: Colors.font_pixel,
     fontSize: 20,
     fontWeight: '800',
     marginBottom: 8,
   },
   scoreText: {
-    color: Colors.black,
+    color: Colors.text,
+    fontFamily: Colors.font_pixel,
     fontSize: 18,
     fontWeight: '800',
   },
   description: {
-    color: Colors.gray,
+    color: Colors.text_muted,
     fontSize: 14,
     lineHeight: 20,
   },
@@ -398,7 +414,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   teamTitle: {
-    color: Colors.black,
+    color: Colors.text,
+    fontFamily: Colors.font_pixel,
     fontSize: 14,
     fontWeight: '800',
     marginBottom: 8,
@@ -410,7 +427,9 @@ const styles = StyleSheet.create({
   },
   teamPokemon: {
     alignItems: 'center',
-    backgroundColor: Colors.primary_blue,
+    backgroundColor: Colors.surface_elevated,
+    borderColor: Colors.neon_blue,
+    borderWidth: 1,
     borderRadius: 8,
     minHeight: 76,
     paddingHorizontal: 8,
@@ -420,6 +439,8 @@ const styles = StyleSheet.create({
   enemyPokemon: {
     alignItems: 'center',
     backgroundColor: Colors.dark_red,
+    borderColor: Colors.neon_red,
+    borderWidth: 1,
     borderRadius: 8,
     minHeight: 76,
     paddingHorizontal: 8,
@@ -432,28 +453,41 @@ const styles = StyleSheet.create({
   },
   teamPokemonName: {
     color: Colors.white,
+    fontFamily: Colors.font_pixel,
     fontSize: 11,
     fontWeight: '700',
     marginTop: 2,
     textAlign: 'center',
   },
+  teamPokemonHover: {
+    shadowColor: Colors.neon_shadow_blue,
+    shadowOpacity: 0.9,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 0 },
+    transform: [{ translateY: -2 }, { scale: 1.04 }],
+  },
+  teamPokemonPressed: {
+    transform: [{ translateY: 1 }, { scale: 0.97 }],
+  },
   animationBox: {
     alignItems: 'center',
-    backgroundColor: Colors.dashboard_background,
-    borderColor: Colors.input_border,
+    backgroundColor: Colors.surface_elevated,
+    borderColor: Colors.neon_blue,
     borderRadius: 8,
     borderWidth: 1,
     marginTop: 14,
     padding: 14,
   },
   animationText: {
-    color: Colors.primary_blue,
+    color: Colors.neon_blue,
+    fontFamily: Colors.font_pixel,
     fontSize: 14,
     fontWeight: '800',
     marginTop: 8,
   },
   animationCountdown: {
-    color: Colors.dark_red,
+    color: Colors.neon_red,
+    fontFamily: Colors.font_pixel,
     fontSize: 24,
     fontWeight: '800',
     marginTop: 4,
@@ -484,13 +518,15 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   roundTitle: {
-    color: Colors.black,
+    color: Colors.text,
+    fontFamily: Colors.font_pixel,
     fontSize: 14,
     fontWeight: '800',
     marginBottom: 4,
   },
   winnerText: {
-    color: Colors.primary_blue,
+    color: Colors.neon_blue,
+    fontFamily: Colors.font_pixel,
     fontSize: 13,
     fontWeight: '800',
     marginTop: 4,

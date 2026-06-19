@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { Pokemon } from '@/@types/pokemon';
@@ -124,7 +124,7 @@ export default function Teams() {
     <SafeAreaView style={styles.screen}>
       <Navbar
         eyebrow="Player"
-        title="Times Pokemon"
+        title="Times Pokémon"
         subtitle="Seu time salvo no banco."
       />
 
@@ -139,12 +139,19 @@ export default function Teams() {
               <Text style={styles.sourceText}>{teamSource}</Text>
               <View style={styles.memberGrid}>
                 {playerTeam.map((pokemon) => (
-                  <View key={`player-${pokemon.id}`} style={styles.memberBadge}>
+                  <Pressable
+                    key={`player-${pokemon.id}`}
+                    style={({ hovered, pressed }: { hovered?: boolean; pressed: boolean }) => [
+                      styles.memberBadge,
+                      hovered && styles.memberBadgeHover,
+                      pressed && styles.memberBadgePressed,
+                    ]}
+                  >
                     {pokemon.imagem && (
                       <Image source={{ uri: pokemon.imagem }} style={styles.pokemonImage} />
                     )}
                     <Text style={styles.pokemonName}>{normalizeName(pokemon.nome)}</Text>
-                  </View>
+                  </Pressable>
                 ))}
               </View>
             </>
@@ -162,8 +169,8 @@ export default function Teams() {
           />
         </View>
 
-        <Button title="Abrir Box Pokemon" onPress={() => router.push('/box')} style={styles.button} />
-        <Button title="Voltar para Pokedex" onPress={() => router.push('/pokedex')} style={styles.button} />
+        <Button title="Abrir Box Pokémon" onPress={() => router.push('/box')} style={styles.button} />
+        <Button title="Voltar para Pokédex" onPress={() => router.push('/pokedex')} style={styles.button} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -183,9 +190,9 @@ const styles = StyleSheet.create({
   },
   card: {
     borderWidth: 1,
-    borderColor: Colors.input_border,
+    borderColor: Colors.neon_blue,
     borderRadius: 8,
-    backgroundColor: Colors.white,
+    backgroundColor: Colors.surface,
     padding: 16,
     marginBottom: 14,
   },
@@ -200,13 +207,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   cardTitle: {
-    color: Colors.primary_blue,
+    color: Colors.neon_blue,
+    fontFamily: Colors.font_pixel,
     fontSize: 20,
     fontWeight: '800',
     marginBottom: 6,
   },
   cardDescription: {
-    color: Colors.gray,
+    color: Colors.text_muted,
     fontSize: 14,
     lineHeight: 20,
     marginBottom: 12,
@@ -218,21 +226,32 @@ const styles = StyleSheet.create({
   },
   memberBadge: {
     alignItems: 'center',
-    backgroundColor: Colors.primary_blue,
+    backgroundColor: Colors.surface_elevated,
+    borderColor: Colors.neon_blue,
+    borderWidth: 1,
     borderRadius: 8,
     flexDirection: 'row',
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
+  memberBadgeHover: {
+    shadowColor: Colors.neon_shadow_blue,
+    shadowOpacity: 0.9,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 0 },
+    transform: [{ translateY: -2 }, { scale: 1.04 }],
+  },
+  memberBadgePressed: {
+    transform: [{ translateY: 1 }, { scale: 0.97 }],
+  },
   sourceText: {
-    color: Colors.gray,
+    color: Colors.text_muted,
     fontSize: 13,
     lineHeight: 18,
     marginBottom: 10,
   },
   randomButton: {
     marginTop: 16,
-    backgroundColor: Colors.primary_blue,
   },
   button: {
     marginTop: 12,

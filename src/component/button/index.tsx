@@ -1,16 +1,25 @@
-import { TouchableOpacity, Text, TouchableOpacityProps, StyleProp, ViewStyle } from "react-native"
+import { Pressable, PressableProps, Text, StyleProp, ViewStyle } from "react-native"
 
 import {Styles} from './style'
 
-type ButtonProps = TouchableOpacityProps & {
+type ButtonProps = PressableProps & {
   title: string;
   style?: StyleProp<ViewStyle>;
 }
 
 export default function Button({ title, style, ...rest }: ButtonProps) {
   return (
-    <TouchableOpacity style={[Styles.button, style, ]} {...rest}>
+    <Pressable
+      style={({ hovered, pressed }: { hovered?: boolean; pressed: boolean }) => [
+        Styles.button,
+        hovered && Styles.buttonHover,
+        pressed && Styles.buttonPressed,
+        rest.disabled && Styles.buttonDisabled,
+        style,
+      ]}
+      {...rest}
+    >
       <Text style={Styles.title}>{title}</Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
