@@ -24,36 +24,60 @@ export default function Navbar({
 }: NavbarProps) {
   const router = useRouter();
   const { signOut } = useAuth();
-
   const [menuVisible, setMenuVisible] = useState(false);
 
-  function handleSignOut() {
-    signOut();
+  async function handleSignOut() {
+    await signOut();
     router.replace('/');
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.safeArea}>
       <View style={styles.navbar}>
-        <View style={styles.headerContent}>
-          <Text style={styles.eyebrow}>{eyebrow}</Text>
-          <Text style={styles.title}>{title}</Text>
+        <View style={styles.navbarContent}>
+          <View style={styles.headerContent}>
+            <Text style={styles.eyebrow}>{eyebrow}</Text>
+            <Text style={styles.title}>{title}</Text>
 
-          {subtitle && (
-            <Text style={styles.subtitle}>{subtitle}</Text>
-          )}
+            {subtitle && (
+              <Text style={styles.subtitle}>{subtitle}</Text>
+            )}
+          </View>
+
+          <TouchableOpacity
+            onPress={() => setMenuVisible(!menuVisible)}
+            style={styles.menuButton}
+            accessibilityLabel="Abrir menu"
+          >
+            <View style={styles.menuLine} />
+            <View style={styles.menuLine} />
+            <View style={styles.menuLine} />
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
-          onPress={() => setMenuVisible(!menuVisible)}
-          style={styles.menuButton}
-        >
-          <Text style={styles.menuIcon}>☰</Text>
-        </TouchableOpacity>
       </View>
 
       {menuVisible && (
         <View style={styles.menu}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => {
+              setMenuVisible(false);
+              router.push('/pokedex');
+            }}
+          >
+            <Text style={styles.menuText}>Pokedex</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => {
+              setMenuVisible(false);
+              router.push('/dashboard');
+            }}
+          >
+            <Text style={styles.menuText}>Dashboard</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.menuItem}
             onPress={() => {
@@ -78,6 +102,26 @@ export default function Navbar({
             style={styles.menuItem}
             onPress={() => {
               setMenuVisible(false);
+              router.push('/box');
+            }}
+          >
+            <Text style={styles.menuText}>Box Pokemon</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => {
+              setMenuVisible(false);
+              router.push('/battle');
+            }}
+          >
+            <Text style={styles.menuText}>Batalha</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => {
+              setMenuVisible(false);
               handleSignOut();
             }}
           >
@@ -90,20 +134,26 @@ export default function Navbar({
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    backgroundColor: Colors.dark_red,
+  },
   navbar: {
     backgroundColor: Colors.dark_red,
     paddingHorizontal: 20,
     paddingVertical: 20,
+  },
+  navbarContent: {
+    width: '100%',
+    maxWidth: 960,
+    alignSelf: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
   },
-
   headerContent: {
     flex: 1,
     marginRight: 12,
   },
-
   eyebrow: {
     color: Colors.light_purple,
     fontSize: 12,
@@ -111,47 +161,50 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginBottom: 4,
   },
-
   title: {
     color: Colors.soft_purple,
     fontSize: 32,
     fontWeight: '800',
   },
-
   subtitle: {
     color: Colors.soft_purple_muted,
     fontSize: 14,
     marginTop: 6,
   },
-
   menuButton: {
+    width: 44,
+    height: 44,
     padding: 8,
+    justifyContent: 'center',
+    gap: 5,
   },
-
-  menuIcon: {
-    color: Colors.white,
-    fontSize: 28,
-    fontWeight: 'bold',
-  },
-
-  menu: {
+  menuLine: {
+    width: 24,
+    height: 3,
+    borderRadius: 2,
     backgroundColor: Colors.white,
   },
-
+  menu: {
+    width: '100%',
+    maxWidth: 960,
+    alignSelf: 'center',
+    backgroundColor: Colors.white,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+    overflow: 'hidden',
+  },
   menuItem: {
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: Colors.input_border,
   },
-
   menuText: {
     color: Colors.black,
     fontSize: 16,
     fontWeight: '600',
   },
-
   logoutText: {
-    color: '#D32F2F',
+    color: Colors.danger,
     fontSize: 16,
     fontWeight: '700',
   },

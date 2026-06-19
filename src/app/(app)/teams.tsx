@@ -1,93 +1,168 @@
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View, ActivityIndicator, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
-import Button from '@/component/button';
-import { Colors } from '@/constants/colors';
-import { getPokemon } from '@/integration/pokemonIntegration'; // Ajuste o caminho do import da sua API aqui
 import { Pokemon } from '@/@types/pokemon';
+import { TeamPokemon } from '@/@types/team';
+import Button from '@/component/button';
+import Navbar from '@/component/navbar';
+import { Colors } from '@/constants/colors';
+import { useAuth } from '@/context/AuthContext';
+import { getPokemon } from '@/integration/pokemonIntegration';
+import { getTeam } from '@/integration/teamIntegration';
+import { getStoredPokemonTeam, setStoredPokemonTeam } from '@/integration/pokemonBoxStorage';
+
+function normalizeName(name: string) {
+  return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+function getTeamPokemonId(teamPokemon: TeamPokemon | number | string) {
+  if (typeof teamPokemon === 'number') return teamPokemon;
+  if (typeof teamPokemon === 'string') return Number(teamPokemon);
+  return Number(teamPokemon.pokemonId ?? teamPokemon.pokemon_id ?? teamPokemon.pokemon?.id ?? teamPokemon.id);
+}
+
+function hydrateTeamPokemon(teamPokemon: TeamPokemon | number | string, pokemonList: Pokemon[]) {
+  const pokemonId = getTeamPokemonId(teamPokemon);
+  if (!Number.isFinite(pokemonId)) return null;
+
+  const pokemonDetails = pokemonList.find((pokemon) => pokemon.id === pokemonId);
+  if (pokemonDetails) return pokemonDetails;
+
+  if (typeof teamPokemon !== 'object') return null;
+
+  const name = teamPokemon.nome || teamPokemon.name || teamPokemon.pokemon?.nome || teamPokemon.pokemon?.name;
+  if (!name) return null;
+
+  return {
+    id: pokemonId,
+    index: pokemonId.toString().padStart(3, '0'),
+    nome: name,
+    imagem: teamPokemon.imagem || teamPokemon.image || teamPokemon.pokemon?.imagem || teamPokemon.pokemon?.image || '',
+    tipos: teamPokemon.tipos || teamPokemon.pokemon?.tipos || [],
+    poderes: [],
+  };
+}
 
 export default function Teams() {
   const router = useRouter();
-  
-  // Estados para gerenciar a lista completa da API, o time gerado e o loading
-  const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
-  const [randomTeam, setRandomTeam] = useState<Pokemon[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { userId, token } = useAuth();
 
-  // Busca os 151 Pokémon logo ao carregar a tela
+  const [allPokemon, setAllPokemon] = useState<Pokemon[]>([]);
+  const [playerTeam, setPlayerTeam] = useState<Pokemon[]>([]);
+  const [teamSource, setTeamSource] = useState('');
+  const [loadingPlayerTeam, setLoadingPlayerTeam] = useState(true);
+  const [randomizingTeam, setRandomizingTeam] = useState(false);
+
   useEffect(() => {
-    async function loadPokemonData() {
+    async function loadPlayerTeam() {
       try {
-        const data = await getPokemon(151);
-        setAllPokemon(data);
-        generateRandomTeam(data); // Gera o primeiro time assim que carrega
+        setLoadingPlayerTeam(true);
+        const pokemons = await getPokemon(151);
+        setAllPokemon(pokemons);
+
+        if (!userId) return;
+
+        let apiTeam: Pokemon[] = [];
+
+        try {
+          const response = await getTeam(userId, token || undefined);
+          apiTeam = (response.team || [])
+            .map((teamPokemon) => hydrateTeamPokemon(teamPokemon, pokemons))
+            .filter((pokemon): pokemon is Pokemon => Boolean(pokemon))
+            .slice(0, 5);
+        } catch (error) {
+          console.error('Erro ao buscar time da API:', error);
+        }
+
+        if (apiTeam.length === 5) {
+          setPlayerTeam(apiTeam);
+          setTeamSource('Time carregado da API.');
+          return;
+        }
+
+        const storedTeamIds = await getStoredPokemonTeam(userId);
+        const storedTeam = storedTeamIds
+          .map((id) => pokemons.find((pokemon) => pokemon.id === id))
+          .filter((pokemon): pokemon is Pokemon => Boolean(pokemon));
+
+        if (storedTeam.length === 5) {
+          setPlayerTeam(storedTeam);
+          setTeamSource('Time local de teste.');
+          return;
+        }
+
+        setPlayerTeam([]);
+        setTeamSource('Nenhum time foi encontrado para este jogador.');
       } catch (error) {
-        console.error("Erro ao buscar Pokémon para o time:", error);
+        console.error('Erro ao buscar time do jogador:', error);
       } finally {
-        setLoading(false);
+        setLoadingPlayerTeam(false);
       }
     }
-    loadPokemonData();
-  }, []);
 
-  // Função que embaralha e seleciona 5 Pokémon únicos
-  const generateRandomTeam = (pokemonList: Pokemon[]) => {
-    if (pokemonList.length === 0) return;
+    loadPlayerTeam();
+  }, [token, userId]);
 
-    // Cria uma cópia da lista para não mutar o estado original
-    const shuffled = [...pokemonList].sort(() => 0.5 - Math.random());
-    
-    // Seleciona os 5 primeiros elementos do array embaralhado
-    const selectedTeam = shuffled.slice(0, 5);
-    setRandomTeam(selectedTeam);
-  };
+  async function randomizeLocalTeam() {
+    if (!userId || allPokemon.length === 0) return;
+
+    try {
+      setRandomizingTeam(true);
+      const nextTeam = [...allPokemon].sort(() => 0.5 - Math.random()).slice(0, 5);
+      await setStoredPokemonTeam(userId, nextTeam.map((pokemon) => pokemon.id));
+      setPlayerTeam(nextTeam);
+      setTeamSource('Time local de teste.');
+    } catch (error) {
+      console.error('Erro ao sortear time local:', error);
+    } finally {
+      setRandomizingTeam(false);
+    }
+  }
 
   return (
     <SafeAreaView style={styles.screen}>
-      <View style={styles.header}>
-        <Text style={styles.eyebrow}>Player</Text>
-        <Text style={styles.title}>Times Pokemon</Text>
-        <Text style={styles.subtitle}>Monte e acompanhe as equipes principais do jogador.</Text>
-      </View>
+      <Navbar
+        eyebrow="Player"
+        title="Times Pokemon"
+        subtitle="Seu time salvo no banco."
+      />
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        
-        {/* --- Seção do time aleatório via api --- */}
-        <View style={[styles.card, styles.randomCard]}>
-          {/* --- Andrei: André, fazer --- */}
-          <Text style={[styles.cardTitle, styles.randomTitle]}>Seu Time Aleatório</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Meu Time Atual</Text>
 
-          {loading ? (
-            <ActivityIndicator size="small" color={Colors.primary_blue} style={{ marginVertical: 10 }} />
+          {loadingPlayerTeam ? (
+            <ActivityIndicator size="small" color={Colors.primary_blue} style={styles.loader} />
+          ) : playerTeam.length > 0 ? (
+            <>
+              <Text style={styles.sourceText}>{teamSource}</Text>
+              <View style={styles.memberGrid}>
+                {playerTeam.map((pokemon) => (
+                  <View key={`player-${pokemon.id}`} style={styles.memberBadge}>
+                    {pokemon.imagem && (
+                      <Image source={{ uri: pokemon.imagem }} style={styles.pokemonImage} />
+                    )}
+                    <Text style={styles.pokemonName}>{normalizeName(pokemon.nome)}</Text>
+                  </View>
+                ))}
+              </View>
+            </>
           ) : (
-            <View style={styles.memberGrid}>
-              {randomTeam.map((pokemon) => (
-                <View key={`random-${pokemon.id}`} style={[styles.memberBadge, styles.randomBadge]}>
-                  {/* 2. EXIBIÇÃO DA IMAGEM: Passamos a URL da API no 'uri' */}
-                  {pokemon.imagem && (
-                    <Image 
-                      source={{ uri: pokemon.imagem }} 
-                      style={styles.pokemonImage} 
-                    />
-                  )}
-                  <Text style={styles.pokemonName}>
-                    {pokemon.nome.charAt(0).toUpperCase() + pokemon.nome.slice(1)}
-                  </Text>
-                </View>
-              ))}
-            </View>
+            <Text style={styles.cardDescription}>
+              {teamSource || 'Nenhum time foi encontrado para este jogador.'}
+            </Text>
           )}
 
-          <Button 
-            title="Sortear Novo Time" 
-            onPress={() => generateRandomTeam(allPokemon)} 
-            style={styles.rerollButton}
-            disabled={loading}
+          <Button
+            title={randomizingTeam ? 'Sorteando...' : 'Sortear time de teste'}
+            onPress={randomizeLocalTeam}
+            disabled={loadingPlayerTeam || randomizingTeam || allPokemon.length === 0}
+            style={styles.randomButton}
           />
         </View>
 
-        <Button title="Ver perfil" onPress={() => router.push('/profile')} style={styles.button} />
+        <Button title="Abrir Box Pokemon" onPress={() => router.push('/box')} style={styles.button} />
         <Button title="Voltar para Pokedex" onPress={() => router.push('/pokedex')} style={styles.button} />
       </ScrollView>
     </SafeAreaView>
@@ -99,34 +174,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.dashboard_background,
   },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 28,
-    paddingBottom: 18,
-    backgroundColor: Colors.dark_red,
-    borderBottomColor: Colors.black,
-    borderBottomWidth: 1,
-  },
-  eyebrow: {
-    color: Colors.light_purple,
-    fontSize: 12,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0,
-    marginBottom: 6,
-  },
-  title: {
-    color: Colors.soft_purple,
-    fontSize: 34,
-    fontWeight: '800',
-  },
-  subtitle: {
-    color: Colors.soft_purple_muted,
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: 8,
-  },
   content: {
+    width: '100%',
+    maxWidth: 720,
+    alignSelf: 'center',
     padding: 16,
     paddingBottom: 28,
   },
@@ -148,13 +199,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
   },
-  randomCard: {
-    borderColor: Colors.primary_blue,
-    borderWidth: 1.5,
-  },
-  randomTitle: {
-    color: Colors.dark_red,
-  },
   cardTitle: {
     color: Colors.primary_blue,
     fontSize: 20,
@@ -173,23 +217,27 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   memberBadge: {
-    color: Colors.soft_purple,
+    alignItems: 'center',
     backgroundColor: Colors.primary_blue,
     borderRadius: 8,
+    flexDirection: 'row',
     paddingHorizontal: 10,
     paddingVertical: 6,
-    fontSize: 12,
-    fontWeight: '700',
   },
-  randomBadge: {
-    backgroundColor: Colors.dark_red,
-    color: Colors.white,
+  sourceText: {
+    color: Colors.gray,
+    fontSize: 13,
+    lineHeight: 18,
+    marginBottom: 10,
+  },
+  randomButton: {
+    marginTop: 16,
+    backgroundColor: Colors.primary_blue,
   },
   button: {
     marginTop: 12,
   },
-  rerollButton: {
-    marginTop: 16,
-    backgroundColor: Colors.primary_blue,
-  }
+  loader: {
+    marginVertical: 10,
+  },
 });

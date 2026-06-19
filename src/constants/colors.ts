@@ -19,4 +19,5 @@ export const Colors = {
     badge_purple_background: 'rgba(192, 132, 252, 0.28)',
     badge_purple_border: 'rgba(233, 213, 255, 0.28)',
     soft_error: '#fecdd3',
+    danger: '#D32F2F',
 }

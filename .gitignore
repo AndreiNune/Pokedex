@@ -3,6 +3,10 @@
 # dependencies
 node_modules/
 
+# postman
+postman/
+.postman/
+
 # Expo
 .expo/
 dist/

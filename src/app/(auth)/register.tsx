@@ -12,47 +12,57 @@ import { useRouter } from 'expo-router';
 import Button from '@/component/button';
 import Input from '@/component/input';
 import { Colors } from '@/constants/colors';
-import { useAuth } from '@/context/AuthContext';
+import { register } from '@/integration/authIntegration';
 
-export default function Index() {
+export default function Register() {
   const [usuario, setUsuario] = useState('');
   const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
-  const { signIn } = useAuth();
 
-  async function validateCredentials() {
-    if (!usuario.trim() || !senha.trim()) {
-      Alert.alert('Campos obrigatorios', 'Por favor, preencha o usuario e a senha.');
+  async function handleRegister() {
+    if (!usuario.trim() || !senha.trim() || !confirmarSenha.trim()) {
+      Alert.alert('Campos obrigatorios', 'Preencha usuario, senha e confirmacao.');
       return;
     }
 
-    setIsLoading(true);
-    const success = await signIn(usuario, senha);
-
-    if (success) {
-      router.push('/pokedex');
+    if (senha !== confirmarSenha) {
+      Alert.alert('Senha invalida', 'A senha e a confirmacao precisam ser iguais.');
       return;
     }
 
-    setIsLoading(false);
-    Alert.alert('Acesso negado', 'Usuario ou senha incorretos. Tente novamente.');
+    try {
+      setIsLoading(true);
+      await register({
+        username: usuario.trim(),
+        password: senha,
+      });
+
+      Alert.alert('Cadastro concluido', 'Agora voce pode entrar com sua conta.');
+      router.replace('/');
+    } catch (error) {
+      console.error('Erro ao cadastrar usuario:', error);
+      Alert.alert('Erro no cadastro', 'Nao foi possivel cadastrar este usuario.');
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
     <SafeAreaView style={styles.screen}>
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          <Text style={styles.eyebrow}>Treinador</Text>
-          <Text style={styles.title}>Pokedex</Text>
-          <Text style={styles.subtitle}>Entre para acessar seu perfil, sua Pokedex e seus times.</Text>
+          <Text style={styles.eyebrow}>Novo treinador</Text>
+          <Text style={styles.title}>Cadastro</Text>
+          <Text style={styles.subtitle}>Crie sua conta para salvar perfil e times Pokemon.</Text>
         </View>
       </View>
 
       <View style={styles.content}>
-        <View style={styles.loginCard}>
-          <Text style={styles.loginTitle}>Login</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Criar conta</Text>
 
           <Input
             placeholder="Usuario"
@@ -67,19 +77,27 @@ export default function Index() {
             value={senha}
             onChangeText={setSenha}
             secureTextEntry
+            style={styles.inputSpacing}
+          />
+
+          <Input
+            placeholder="Confirmar senha"
+            value={confirmarSenha}
+            onChangeText={setConfirmarSenha}
+            secureTextEntry
             style={styles.passwordSpacing}
           />
 
           <Button
-            title={isLoading ? 'Entrando...' : 'Entrar'}
-            onPress={validateCredentials}
+            title={isLoading ? 'Cadastrando...' : 'Cadastrar'}
+            onPress={handleRegister}
             disabled={isLoading}
           />
 
-          <View style={styles.registerRow}>
-            <Text style={styles.registerText}>Ainda nao tem conta?</Text>
-            <TouchableOpacity onPress={() => router.push('/register')}>
-              <Text style={styles.registerLink}>Cadastrar</Text>
+          <View style={styles.loginRow}>
+            <Text style={styles.loginText}>Ja tem conta?</Text>
+            <TouchableOpacity onPress={() => router.replace('/')}>
+              <Text style={styles.loginLink}>Entrar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -131,7 +149,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
-  loginCard: {
+  card: {
     width: '100%',
     maxWidth: 420,
     backgroundColor: Colors.white,
@@ -140,7 +158,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 20,
   },
-  loginTitle: {
+  cardTitle: {
     color: Colors.primary_blue,
     fontSize: 22,
     fontWeight: '800',
@@ -153,18 +171,18 @@ const styles = StyleSheet.create({
   passwordSpacing: {
     marginBottom: 24,
   },
-  registerRow: {
+  loginRow: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: 6,
     justifyContent: 'center',
     marginTop: 16,
   },
-  registerText: {
+  loginText: {
     color: Colors.gray,
     fontSize: 14,
   },
-  registerLink: {
+  loginLink: {
     color: Colors.primary_blue,
     fontSize: 14,
     fontWeight: '800',

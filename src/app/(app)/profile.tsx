@@ -1,52 +1,81 @@
-import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import Button from '@/component/button';
 import Navbar from '@/component/navbar';
 
+import { ProfileStats } from '@/@types/auth';
 import { Colors } from '@/constants/colors';
 import { useAuth } from '@/context/AuthContext';
+import { getProfileStats } from '@/integration/authIntegration';
 
 export default function Profile() {
-  const router = useRouter();
-  const { user, signOut } = useAuth();
+  const { user, userId } = useAuth();
+  const [stats, setStats] = useState<ProfileStats | null>(null);
+  const [loadingStats, setLoadingStats] = useState(false);
 
-  function handleSignOut() {
-    signOut();
-    router.replace('/');
-  }
+  useEffect(() => {
+    async function loadStats() {
+      if (!userId) return;
+
+      try {
+        setLoadingStats(true);
+        const profileStats = await getProfileStats(userId);
+        setStats(profileStats);
+      } catch (error) {
+        console.error('Erro ao carregar perfil:', error);
+      } finally {
+        setLoadingStats(false);
+      }
+    }
+
+    loadStats();
+  }, [userId]);
 
   return (
     <SafeAreaView style={styles.screen}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Navbar
-        eyebrow="Treinador"
-        title={user || 'Player'}
-        subtitle="Perfil do jogador conectado."
-      />
+          eyebrow="Treinador"
+          title={user || 'Player'}
+          subtitle="Perfil do jogador conectado."
+        />
 
-      <View style={styles.content}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>{(user || 'P').charAt(0).toUpperCase()}</Text>
+        <View style={styles.content}>
+          <View style={styles.avatar}>
+            <Text style={styles.avatarText}>{(user || 'P').charAt(0).toUpperCase()}</Text>
+          </View>
+
+          <View style={styles.infoBox}>
+            <Text style={styles.label}>Nome</Text>
+            <Text style={styles.value}>{user || 'Player'}</Text>
+          </View>
+
+          <View style={styles.infoBox}>
+            <Text style={styles.label}>Status</Text>
+            <Text style={styles.value}>Online</Text>
+          </View>
+
+          {loadingStats ? (
+            <ActivityIndicator size="small" color={Colors.primary_blue} />
+          ) : (
+            <View style={styles.statsGrid}>
+              <View style={styles.statBox}>
+                <Text style={styles.label}>Level</Text>
+                <Text style={styles.value}>{stats?.level || '0'}</Text>
+              </View>
+
+              <View style={styles.statBox}>
+                <Text style={styles.label}>Vitorias</Text>
+                <Text style={styles.value}>{stats?.vitorias || '0'}</Text>
+              </View>
+
+              <View style={styles.statBox}>
+                <Text style={styles.label}>Derrotas</Text>
+                <Text style={styles.value}>{stats?.derrotas || '0'}</Text>
+              </View>
+            </View>
+          )}
         </View>
-
-        <View style={styles.infoBox}>
-          <Text style={styles.label}>Nome</Text>
-          <Text style={styles.value}>{user || 'Player'}</Text>
-        </View>
-
-        <View style={styles.infoBox}>
-          <Text style={styles.label}>Classe</Text>
-          <Text style={styles.value}>Treinador Pokemon</Text>
-        </View>
-
-        <View style={styles.infoBox}>
-          <Text style={styles.label}>Status</Text>
-          <Text style={styles.value}>Online</Text>
-        </View>
-
-      </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -57,35 +86,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.dashboard_background,
   },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 28,
-    paddingBottom: 18,
-    backgroundColor: Colors.dark_red,
-    borderBottomColor: Colors.black,
-    borderBottomWidth: 1,
-  },
-  eyebrow: {
-    color: Colors.light_purple,
-    fontSize: 12,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0,
-    marginBottom: 6,
-  },
-  title: {
-    color: Colors.soft_purple,
-    fontSize: 34,
-    fontWeight: '800',
-  },
-  subtitle: {
-    color: Colors.soft_purple_muted,
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: 8,
+  scrollContent: {
+    flexGrow: 1,
   },
   content: {
-    flex: 1,
+    width: '100%',
+    maxWidth: 520,
+    alignSelf: 'center',
     padding: 20,
     alignItems: 'center',
   },
@@ -124,7 +131,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
   },
-  button: {
-    marginTop: 12,
+  statsGrid: {
+    width: '100%',
+    gap: 12,
+  },
+  statBox: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: Colors.input_border,
+    borderRadius: 8,
+    backgroundColor: Colors.white,
+    padding: 16,
   },
 });
