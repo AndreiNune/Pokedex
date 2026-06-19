@@ -155,7 +155,7 @@ export default function Teams() {
           )}
 
           <Button
-            title={randomizingTeam ? 'Sorteando...' : 'Sortear time de teste'}
+            title={randomizingTeam ? 'Salvando...' : 'Sortear e salvar time de teste'}
             onPress={randomizeLocalTeam}
             disabled={loadingPlayerTeam || randomizingTeam || allPokemon.length === 0}
             style={styles.randomButton}
