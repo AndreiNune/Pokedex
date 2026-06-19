@@ -188,7 +188,10 @@ export default function Battle() {
   }
 
   async function startBattle() {
-    if (isBattling || playerTeam.length < 5 || enemyTeam.length < 5) return;
+    if (isBattling || playerTeam.length < 5 || allPokemon.length < 5) return;
+
+    const battleEnemyTeam = generateTeam(allPokemon);
+    setEnemyTeam(battleEnemyTeam);
 
     await runBattleAnimation();
 
@@ -198,7 +201,7 @@ export default function Battle() {
 
     for (let index = 0; index < 5 && playerWins < 3 && enemyWins < 3; index += 1) {
       const playerPokemon = playerTeam[index];
-      const enemyPokemon = enemyTeam[index];
+      const enemyPokemon = battleEnemyTeam[index];
       const playerStat = pickRandom(playerPokemon.poderes);
       const enemyStat = enemyPokemon.poderes.find((stat) => stat.nome === playerStat.nome) || pickRandom(enemyPokemon.poderes);
 
@@ -225,19 +228,17 @@ export default function Battle() {
     setRounds(nextRounds);
 
     if (playerWins >= 3) {
-      const capturedPokemon = pickRandom(enemyTeam);
+      const capturedPokemon = pickRandom(battleEnemyTeam);
       setReward(capturedPokemon);
       setBattleResult('Vitoria! Um Pokemon do time inimigo foi enviado para sua box.');
       await rewardCapturedPokemon(capturedPokemon);
       await updateBattleStats(true);
-      setEnemyTeam(generateTeam(allPokemon));
       return;
     }
 
     setReward(null);
     setBattleResult('Derrota. Reorganize seu time e tente novamente.');
     await updateBattleStats(false);
-    setEnemyTeam(generateTeam(allPokemon));
   }
 
   return (
