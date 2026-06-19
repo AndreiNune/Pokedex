@@ -275,6 +275,35 @@ export default function Battle() {
               )}
             </View>
 
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>Times em Campo</Text>
+              <View style={styles.teamComparison}>
+                <View style={styles.teamColumn}>
+                  <Text style={styles.teamTitle}>Seu Time</Text>
+                  <View style={styles.teamGrid}>
+                    {playerTeam.map((pokemon) => (
+                      <View key={`player-team-${pokemon.id}`} style={styles.teamPokemon}>
+                        {pokemon.imagem && <Image source={{ uri: pokemon.imagem }} style={styles.teamPokemonImage} />}
+                        <Text style={styles.teamPokemonName}>{normalizeName(pokemon.nome)}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+
+                <View style={styles.teamColumn}>
+                  <Text style={styles.teamTitle}>Time Inimigo</Text>
+                  <View style={styles.teamGrid}>
+                    {enemyTeam.map((pokemon) => (
+                      <View key={`enemy-team-${pokemon.id}`} style={styles.enemyPokemon}>
+                        {pokemon.imagem && <Image source={{ uri: pokemon.imagem }} style={styles.teamPokemonImage} />}
+                        <Text style={styles.teamPokemonName}>{normalizeName(pokemon.nome)}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              </View>
+            </View>
+
             {battleResult.length > 0 && (
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>Resultado</Text>
@@ -360,6 +389,52 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 16,
+  },
+  teamComparison: {
+    gap: 12,
+  },
+  teamColumn: {
+    width: '100%',
+  },
+  teamTitle: {
+    color: Colors.black,
+    fontSize: 14,
+    fontWeight: '800',
+    marginBottom: 8,
+  },
+  teamGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  teamPokemon: {
+    alignItems: 'center',
+    backgroundColor: Colors.primary_blue,
+    borderRadius: 8,
+    minHeight: 76,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    width: 92,
+  },
+  enemyPokemon: {
+    alignItems: 'center',
+    backgroundColor: Colors.dark_red,
+    borderRadius: 8,
+    minHeight: 76,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    width: 92,
+  },
+  teamPokemonImage: {
+    height: 46,
+    width: 46,
+  },
+  teamPokemonName: {
+    color: Colors.white,
+    fontSize: 11,
+    fontWeight: '700',
+    marginTop: 2,
+    textAlign: 'center',
   },
   animationBox: {
     alignItems: 'center',
